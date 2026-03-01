@@ -1,0 +1,32 @@
+name: parking_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.6.0
+  sqflite: ^2.2.8+4
+  font_awesome_flutter: ^10.12.0
+  provider: ^6.1.5+1
+  responsive_framework: ^1.5.1
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # ✅ FIX BUG 3: แก้ชื่อไฟล์ให้ตรงกับชื่อจริงของไฟล์รูป
+  assets:
+    - assets/images/cinema.jpg         # cinema.jpg ✅
+    - assets/images/shoppingmall.jpg   # shoppingmall.jpg ✅ (ไม่ใช่ shopingmall)
+    - assets/images/market.jpg         # market.jpg ✅ (lowercase .jpg)
+    - assets/images/home_ground.jpg    # home_ground.jpg ✅ (มี underscore)
