@@ -70,7 +70,7 @@ class _ParkingLotsScreenState extends State<ParkingLotsScreen> {
         'totalSpots': 50,
         'availableSpots': 20,
         'operatedBy': 'Cinema Park Management',
-        'image': 'assets/images/cinema.jpg',         // ✅ ตรงกับ pubspec
+        'image': 'assets/image/cinema.jpg',
       },
       {
         'name': 'Shopping Mall Spot',
@@ -79,7 +79,7 @@ class _ParkingLotsScreenState extends State<ParkingLotsScreen> {
         'totalSpots': 100,
         'availableSpots': 45,
         'operatedBy': 'Shopping Mall Management',
-        'image': 'assets/images/shoppingmall.jpg',   // ✅ ตรงกับ pubspec
+        'image': 'assets/image/shoppingmall.jpg',
       },
       {
         'name': 'Market Spot',
@@ -88,7 +88,7 @@ class _ParkingLotsScreenState extends State<ParkingLotsScreen> {
         'totalSpots': 60,
         'availableSpots': 25,
         'operatedBy': 'Market Management',
-        'image': 'assets/images/market.jpg',         // ✅ ตรงกับ pubspec
+        'image': 'assets/image/market.JPG',
       },
       {
         'name': 'Home Ground Spot',
@@ -97,7 +97,7 @@ class _ParkingLotsScreenState extends State<ParkingLotsScreen> {
         'totalSpots': 80,
         'availableSpots': 35,
         'operatedBy': 'Home Ground Management',
-        'image': 'assets/images/home_ground.jpg',    // ✅ ตรงกับ pubspec
+        'image': 'assets/image/home ground.jpg',
       },
     ];
 

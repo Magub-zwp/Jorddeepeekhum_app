@@ -23,10 +23,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  
-assets:
-   - assets/images/shopingmall.jpg
-   - assets/images/cinemapark.jpg  
-   - assets/images/market.jpg
-   - assets/images/homeground.jpg
+  assets:
+    - assets/image/cinema.jpg
+    - assets/image/shoppingmall.jpg
+    - assets/image/market.JPG
+    - assets/image/home ground.jpg
