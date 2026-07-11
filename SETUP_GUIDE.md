@@ -84,8 +84,7 @@ static const String initDbUrl = 'http://192.168.1.100/parking_app/init_db.php';
 ```bash
 # Connect device or start emulator first
 
-# Run the app
-flutter run
+# Run the app flutter run
 
 # Or with specific device
 flutter run -d <device-id>

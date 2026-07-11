@@ -164,6 +164,7 @@ class ApiService {
           body: json.encode({
             'name': lot.name,
             'address': lot.address,
+            'image': lot.image,
             'rating': lot.rating,
             'totalSpots': lot.totalSpots,
             'availableSpots': lot.availableSpots,
