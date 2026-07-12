@@ -7,7 +7,6 @@ import '../models/parking_spot_model.dart';
 import '../models/booking_model.dart';
 
 class ApiService {
-  // การตั้งค่า API URL - ใช้ 127.0.0.1 แทน localhost เพื่อรองรับ Chrome/Windows ผ่าน XAMPP
   static const String baseUrl = 'http://127.0.0.1/jorddeepeekhum/api';
   static const String initDbUrl = 'http://127.0.0.1/jorddeepeekhum/init_db.php';
 
@@ -90,12 +89,10 @@ class ApiService {
       print('[RESPONSE] สถานะ: ${response.statusCode}');
       print('[RESPONSE] ข้อมูล: ${response.body}');
 
-      // รองรับทั้ง 200 (ปกติ) และ 201 (สร้าง)
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = json.decode(response.body);
-        
-        // ตรวจสอบว่ามี id
-        if (data['id'] == null) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          final data = json.decode(response.body);
+          
+          if (data['id'] == null) {
           throw Exception('API ส่งค่า id = null');
         }
         

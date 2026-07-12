@@ -19,6 +19,8 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
 
   ParkingLot? parkingLot;
   ParkingSpot? parkingSpot;
+  DateTime? startTime;
+  DateTime? endTime;
   List<Vehicle> savedVehicles = [];
   Vehicle? selectedVehicle;
 
@@ -56,6 +58,8 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
     setState(() {
       parkingLot = args['parkingLot'] as ParkingLot;
       parkingSpot = args['parkingSpot'] as ParkingSpot;
+      startTime = args['startTime'] as DateTime?;
+      endTime = args['endTime'] as DateTime?;
     });
 
     if (authService.currentUser != null) {
@@ -146,6 +150,8 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
         'parkingLot': parkingLot,
         'parkingSpot': parkingSpot,
         'vehicle': vehicle,
+        'startTime': startTime,
+        'endTime': endTime,
       });
     }
   }
@@ -164,93 +170,93 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.vehicleDetails),
-        backgroundColor: AppColors.primaryColor,
+        title: const Text('รายละเอียดรถ', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.dark,
+        elevation: 0,
       ),
       backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // แสดงช่องที่เลือก
-              if (parkingLot != null && parkingSpot != null)
-                Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.charcoal,
-                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.local_parking, color: AppColors.primaryColor),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            parkingLot!.name,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
+              // Header Text
+              const Text(
+                'เพิ่มข้อมูลรถยนต์ของคุณ',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.dark),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'กรุณากรอกข้อมูลรถยนต์เพื่อใช้ในการจองที่จอดรถ',
+                style: TextStyle(fontSize: 14, color: AppColors.charcoal),
+              ),
+              const SizedBox(height: 32),
+              
+              // Tab
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.lightgray.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => isNewVehicle = true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: isNewVehicle ? AppColors.white : Colors.transparent,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: isNewVehicle
+                                ? [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)]
+                                : [],
+                          ),
+                          child: const Center(
+                            child: Text('รถยนต์ใหม่', style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (savedVehicles.isNotEmpty)
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => isNewVehicle = false),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: !isNewVehicle ? AppColors.white : Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: !isNewVehicle
+                                  ? [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)]
+                                  : [],
+                            ),
+                            child: Center(
+                              child: Text('รถที่บันทึก (${savedVehicles.length})', style: const TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          Text(
-                            'ช่องจอด: ${parkingSpot!.spotNumber}',
-                            style: AppStyles.bodyTextSmall,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-              // Tab
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => setState(() => isNewVehicle = true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isNewVehicle ? AppColors.primaryColor : Colors.grey,
-                      ),
-                      child: const Text('รถยนต์ใหม่', style: AppStyles.buttonText),
-                    ),
-                  ),
-                  if (savedVehicles.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => setState(() => isNewVehicle = false),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: !isNewVehicle ? AppColors.primaryColor : Colors.grey,
-                        ),
-                        child: Text(
-                          'รถที่บันทึก (${savedVehicles.length})',
-                          style: AppStyles.buttonText,
                         ),
                       ),
-                    ),
                   ],
-                ],
+                ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
-              // ฟอร์มรถใหม่
+              // Form
               if (isNewVehicle) ...[
-                _field(licensePlateCtrl, 'ทะเบียนรถ *', 'เช่น กข1234', Icons.directions_car,
-                    caps: TextCapitalization.characters),
+                _field(licensePlateCtrl, 'ทะเบียนรถ', 'เช่น กข1234', Icons.pin_outlined, caps: TextCapitalization.characters),
                 const SizedBox(height: 16),
-                _field(brandCtrl, 'ยี่ห้อรถ *', 'เช่น Toyota, Honda', Icons.label),
+                _field(brandCtrl, 'ยี่ห้อรถ', 'เช่น Toyota, Honda', Icons.directions_car_outlined),
                 const SizedBox(height: 16),
-                _field(modelCtrl, 'รุ่นรถ *', 'เช่น Civic, Camry', Icons.info),
+                _field(modelCtrl, 'รุ่นรถ', 'เช่น Civic, Camry', Icons.info_outline),
                 const SizedBox(height: 16),
-                _field(colorCtrl, 'สีรถ *', 'เช่น ขาว, ดำ, เทา', Icons.palette),
+                _field(colorCtrl, 'สีรถ', 'เช่น ขาว, ดำ, เทา', Icons.color_lens_outlined),
               ],
 
-              // รายการรถที่บันทึก
+              // Saved Vehicles
               if (!isNewVehicle && savedVehicles.isNotEmpty)
                 ListView.builder(
                   shrinkWrap: true,
@@ -261,70 +267,98 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                     final sel = selectedVehicle?.id == v.id;
                     return GestureDetector(
                       onTap: () => setState(() => selectedVehicle = v),
-                      child: Card(
-                        color: sel ? AppColors.primaryColor : AppColors.charcoal,
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                          child: Row(
-                            children: [
-                              Icon(
-                                sel ? Icons.check_circle : Icons.directions_car,
-                                color: AppColors.white,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      v.licensePlate,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      '${v.brand} ${v.model} • ${v.color}',
-                                      style: const TextStyle(color: AppColors.lightgray),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: sel ? AppColors.primaryBlue : AppColors.lightgray,
+                            width: 2,
                           ),
+                          boxShadow: [
+                            if (sel)
+                              BoxShadow(
+                                color: AppColors.primaryBlue.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: sel ? AppColors.primaryBlue : AppColors.lightgray.withOpacity(0.3),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.directions_car,
+                                color: sel ? AppColors.white : AppColors.charcoal,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    v.licensePlate,
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.dark),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${v.brand} ${v.model} • ${v.color}',
+                                    style: const TextStyle(color: AppColors.charcoal, fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (sel)
+                              const Icon(Icons.check_circle, color: AppColors.primaryBlue, size: 28),
+                          ],
                         ),
                       ),
                     );
                   },
                 ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 100), // padding for bottom button
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
         child: ElevatedButton(
           onPressed: isLoading ? null : _handleNext,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 14),
+            backgroundColor: AppColors.primaryBlue,
+            padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
+              borderRadius: BorderRadius.circular(30),
             ),
           ),
           child: isLoading
               ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                  ),
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(AppColors.white)),
                 )
-              : const Text(AppStrings.next, style: AppStyles.buttonText),
+              : const Text('ต่อไป', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.white)),
         ),
       ),
     );
@@ -337,17 +371,27 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
     IconData icon, {
     TextCapitalization caps = TextCapitalization.none,
   }) {
-    return TextField(
-      controller: ctrl,
-      textCapitalization: caps,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.dark, fontSize: 14)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: ctrl,
+          textCapitalization: caps,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon, color: AppColors.charcoal),
+            filled: true,
+            fillColor: AppColors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

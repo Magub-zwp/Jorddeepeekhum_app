@@ -116,6 +116,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
+  int selectedPaymentMethod = 0; // 0: Credit Card, 1: PromptPay, 2: Cash
+
   @override
   Widget build(BuildContext context) {
     if (parkingLot == null) {
@@ -123,129 +125,210 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.payment),
-        backgroundColor: AppColors.primaryColor,
+        title: const Text('ชำระเงิน', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.dark,
+        elevation: 0,
       ),
       backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // สรุปการจอด
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge)),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('สรุปการจองรถ', style: AppStyles.headingMedium),
-                      const Divider(),
-                      _detail('สถานที่', parkingLot!.name),
-                      _detail('ช่องจอด', parkingSpot!.spotNumber),
-                      _detail('ทะเบียนรถ', vehicle!.licensePlate),
-                      _detail('รถยนต์', '${vehicle!.brand} ${vehicle!.model}'),
-                      _detail('สี', vehicle!.color),
-                      _detail('เข้า', AppUtils.formatDateTime(startTime)),
-                      _detail('ออก', AppUtils.formatDateTime(endTime)),
-                      _detail('ระยะเวลา', PricingService.calculateDuration(startTime: startTime, endTime: endTime)),
-                    ],
-                  ),
-                ),
-              ),
+              const Text('สรุปการจองรถ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.dark)),
               const SizedBox(height: 16),
-              // ราคา
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge)),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text('ราคา', style: AppStyles.headingMedium),
-                      const Divider(),
-                      _price(AppStrings.parkingPrice, totalPrice),
-                      _price(AppStrings.serviceFee, 0.0),
-                      const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(AppStrings.totalPrice, style: AppStyles.headingMedium),
-                          Text(
-                            PricingService.formatPrice(totalPrice),
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.successColor),
-                          ),
-                        ],
-                      ),
-                      if (PricingService.isFreeParking(startTime: startTime, endTime: endTime))
-                        Container(
-                          margin: const EdgeInsets.only(top: 12),
-                          padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-                          decoration: BoxDecoration(
-                            color: AppColors.successColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
-                          ),
-                          child: const Text('ชั่วโมงแรกฟรี!',
-                              style: TextStyle(color: AppColors.successColor, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center),
-                        ),
-                    ],
-                  ),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                  ],
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    _detail('สถานที่', parkingLot!.name, isBold: true),
+                    const Divider(height: 24, color: AppColors.lightgray),
+                    _detail('ช่องจอด', parkingSpot!.spotNumber),
+                    const SizedBox(height: 8),
+                    _detail('ทะเบียนรถ', vehicle!.licensePlate),
+                    const SizedBox(height: 8),
+                    _detail('รถยนต์', '${vehicle!.brand} ${vehicle!.model}'),
+                    const SizedBox(height: 8),
+                    _detail('เวลาเข้า', AppUtils.formatDateTime(startTime)),
+                    const SizedBox(height: 8),
+                    _detail('เวลาออก', AppUtils.formatDateTime(endTime)),
+                    const SizedBox(height: 8),
+                    _detail('ระยะเวลา', PricingService.calculateDuration(startTime: startTime, endTime: endTime)),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
+
+              // วิธีการชำระเงิน
+              const Text('วิธีการชำระเงิน', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.dark)),
+              const SizedBox(height: 16),
+              _buildPaymentMethod(0, 'บัตรเครดิต/เดบิต', Icons.credit_card),
+              const SizedBox(height: 12),
+              _buildPaymentMethod(1, 'พร้อมเพย์ (PromptPay)', Icons.qr_code_2),
+              const SizedBox(height: 12),
+              _buildPaymentMethod(2, 'เงินสด', Icons.money),
+              
+              const SizedBox(height: 32),
+
+              // ราคา
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBlue.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _price('ค่าที่จอดรถ', totalPrice),
+                    const SizedBox(height: 8),
+                    _price('ค่าบริการ', 0.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(height: 1, color: AppColors.lightgray),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('ยอดชำระทั้งหมด', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.dark)),
+                        Text(
+                          PricingService.formatPrice(totalPrice),
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                        ),
+                      ],
+                    ),
+                    if (PricingService.isFreeParking(startTime: startTime, endTime: endTime))
+                      Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text('ชั่วโมงแรกฟรี!',
+                            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 100),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -4)),
+          ],
+        ),
         child: ElevatedButton(
           onPressed: isLoading ? null : _handlePayment,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.successColor,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium)),
+            backgroundColor: AppColors.primaryBlue,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           ),
           child: isLoading
-              ? const SizedBox(height: 20, width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white)))
-              : Text('ชำระเงิน ${PricingService.formatPrice(totalPrice)}',
-                  style: AppStyles.buttonText),
+              ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(AppColors.white)))
+              : Text('ยืนยันชำระเงิน ${PricingService.formatPrice(totalPrice)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.white)),
         ),
       ),
     );
   }
 
-  Widget _detail(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: AppStyles.bodyTextSmall),
-          Text(value, style: AppStyles.bodyText, textAlign: TextAlign.right),
-        ],
+  Widget _buildPaymentMethod(int index, String title, IconData icon) {
+    final isSelected = selectedPaymentMethod == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedPaymentMethod = index;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryBlue : AppColors.lightgray,
+            width: 2,
+          ),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(color: AppColors.primaryBlue.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4)),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primaryBlue : AppColors.lightgray.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: isSelected ? AppColors.white : AppColors.charcoal, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.dark),
+              ),
+            ),
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? AppColors.primaryBlue : AppColors.lightgray,
+                  width: 2,
+                ),
+              ),
+              child: isSelected
+                  ? Center(child: Container(width: 12, height: 12, decoration: const BoxDecoration(color: AppColors.primaryBlue, shape: BoxShape.circle)))
+                  : null,
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  Widget _detail(String label, String value, {bool isBold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(color: AppColors.charcoal, fontSize: 14)),
+        Text(value, style: TextStyle(color: AppColors.dark, fontSize: isBold ? 16 : 14, fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
+      ],
+    );
+  }
+
   Widget _price(String label, double price) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: AppStyles.bodyText),
-          Text(PricingService.formatPrice(price), style: AppStyles.bodyText),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(color: AppColors.dark, fontSize: 16, fontWeight: FontWeight.w500)),
+        Text(PricingService.formatPrice(price), style: const TextStyle(color: AppColors.dark, fontSize: 16, fontWeight: FontWeight.w600)),
+      ],
     );
   }
 }

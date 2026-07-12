@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../utils/app_constants.dart';
 import '../utils/app_utils.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class LoginScreen extends StatefulWidget {
   // สร้าง StatefulWidget สำหรับหน้า Login
   const LoginScreen({super.key});
@@ -21,8 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController passwordController; // ควบคุมการป้อนรหัสผ่าน
 
   // ตัวแปรสำหรับการแสดงข้อมูล
-  bool isLoading = false; // แสดงว่ากำลังโหลดหรือไม่
-  bool obscurePassword = true; // ซ่อนรหัสผ่านหรือไม่
+  bool isLoading = false;
+  bool obscurePassword = true;
+  bool isLoginByPhone = true; // Toggle between Phone and Email
 
   @override
   void initState() {
@@ -99,171 +100,252 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // สร้าง UI สำหรับหน้า Login
     return Scaffold(
-      // แถบด้านบน
-      appBar: AppBar(
-        // ซ่อนปุ่มย้อนกลับ
-        automaticallyImplyLeading: false,
-        // ชื่อแอป
-        title: const Text('JordDeePeeKhum'),
-        // สีของแถบด้านบน
-        backgroundColor: AppColors.primaryColor,
-      ),
-      // พื้นหลัง
       backgroundColor: AppColors.backgroundColor,
-      // เนื้อหา
-      body: SingleChildScrollView(
-        // เลื่อนได้เมื่อเนื้อหามากขึ้น
-        child: Padding(
-          // ระยะห่างรอบ ๆ
-          padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-          // สดมภ์ไว้ตรงกลาง
-          child: Column(
-            // จัดตำแหน่ง
-            mainAxisAlignment: MainAxisAlignment.center,
-            // จัดแนวตั้ง
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            // ส่วนประกอบ
-            children: [
-              // ห่างจากด้านบน
-              const SizedBox(height: 40),
-              // หัวข้อ
-              const Text(
-                AppStrings.login,
-                style: AppStyles.headingLarge,
-                textAlign: TextAlign.center,
-              ),
-              // ห่างระหว่างส่วนประกอบ
-              const SizedBox(height: 32),
-              // ช่องป้อนอีเมล
-              TextField(
-                // ตั้งค่า Controller
-                controller: emailController,
-                // ตั้งค่า Keyboard
-                keyboardType: TextInputType.emailAddress,
-                // ตั้งค่า Decoration
-                decoration: InputDecoration(
-                  // ข้อความ hint
-                  hintText: AppStrings.email,
-                  // ไอคอน
-                  prefixIcon: const Icon(Icons.email),
-                  // ขอบ
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      AppDimensions.borderRadiusMedium,
-                    ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 28),
+                // Logo
+                Center(
+                  child: Image.asset(
+                    'assets/image/logo.png',
+                    height: 130,
                   ),
                 ),
-              ),
-              // ห่างระหว่างส่วนประกอบ
-              const SizedBox(height: 16),
-              // ช่องป้อนรหัสผ่าน
-              TextField(
-                // ตั้งค่า Controller
-                controller: passwordController,
-                // ซ่อนข้อความ
-                obscureText: obscurePassword,
-                // ตั้งค่า Decoration
-                decoration: InputDecoration(
-                  // ข้อความ hint
-                  hintText: AppStrings.password,
-                  // ไอคอน
-                  prefixIcon: const Icon(Icons.lock),
-                  // ปุ่มสำหรับซ่อน/แสดงรหัสผ่าน
-                  suffixIcon: IconButton(
-                    // ไอคอน
-                    icon: Icon(
-                      obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    // จัดการเมื่อกด
-                    onPressed: () {
-                      // เปลี่ยนสถานะ
-                      setState(() {
-                        obscurePassword = !obscurePassword;
-                      });
-                    },
+                const SizedBox(height: 16),
+                // App Name
+                const Text(
+                  'JordDeePeeKhum',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryBlue,
                   ),
-                  // ขอบ
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      AppDimensions.borderRadiusMedium,
-                    ),
-                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              // ห่างระหว่างส่วนประกอบ
-              const SizedBox(height: 24),
-              // ปุ่มเข้าสู่ระบบ
-              ElevatedButton(
-                // จัดการเมื่อกด
-                onPressed: isLoading ? null : _handleLogin,
-                // สไตล์ปุ่ม
-                style: ElevatedButton.styleFrom(
-                  // สีพื้นหลัง
-                  backgroundColor: AppColors.primaryColor,
-                  // สีข้อความ
-                  foregroundColor: AppColors.white,
-                  // ความสูง
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  // มุมโค้ง
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      AppDimensions.borderRadiusMedium,
-                    ),
-                  ),
+                const SizedBox(height: 48),
+                // Welcome Text
+                const Text(
+                  'ยินดีต้อนรับ',
+                  style: AppStyles.headingLarge,
                 ),
-                // ข้อความปุ่ม
-                child: isLoading
-                    ? const SizedBox(
-                        // ความสูง
-                        height: 20,
-                        // ความกว้าง
-                        width: 20,
-                        // สปินเนอร์โหลด
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.white,
+                const SizedBox(height: 8),
+                const Text(
+                  'กรุณาป้อนหมายเลขโทรศัพท์หรืออีเมลเพื่อเข้าสู่ระบบ',
+                  style: TextStyle(color: AppColors.charcoal, fontSize: 14),
+                ),
+                const SizedBox(height: 24),
+                
+                // Toggle Button
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => isLoginByPhone = true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: isLoginByPhone ? AppColors.primaryBlue : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'เบอร์โทรศัพท์',
+                              style: TextStyle(
+                                fontWeight: isLoginByPhone ? FontWeight.bold : FontWeight.normal,
+                                color: isLoginByPhone ? AppColors.primaryBlue : AppColors.charcoal,
+                              ),
+                            ),
                           ),
                         ),
-                      )
-                    : const Text(
-                        AppStrings.login,
-                        style: AppStyles.buttonText,
                       ),
-              ),
-              // ห่างระหว่างส่วนประกอบ
-              const SizedBox(height: 16),
-              // ข้อความและลิงค์ไปหน้าสมัครสมาชิก
-              Row(
-                // จัดตำแหน่ง
-                mainAxisAlignment: MainAxisAlignment.center,
-                // ส่วนประกอบ
-                children: [
-                  // ข้อความ
-                  const Text(AppStrings.dontHaveAccount),
-                  // ปุ่มลิงค์
-                  TextButton(
-                    // จัดการเมื่อกด
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => isLoginByPhone = false),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: !isLoginByPhone ? AppColors.primaryBlue : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'อีเมล',
+                              style: TextStyle(
+                                fontWeight: !isLoginByPhone ? FontWeight.bold : FontWeight.normal,
+                                color: !isLoginByPhone ? AppColors.primaryBlue : AppColors.charcoal,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                
+                // Form Area
+                if (isLoginByPhone) ...[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.lightgray),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          decoration: const BoxDecoration(
+                            border: Border(right: BorderSide(color: AppColors.lightgray)),
+                          ),
+                          child: const Text('+66', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: emailController, // Reusing controller for phone number
+                            keyboardType: TextInputType.phone,
+                            decoration: const InputDecoration(
+                              hintText: '0812345678',
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 16.0),
+                          child: Icon(Icons.check_circle, color: AppColors.primaryBlue),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
                     onPressed: () {
-                      // ไปหน้าสมัครสมาชิก
-                      Navigator.of(context).pushNamed('/register');
+                      final phone = emailController.text.trim();
+                      if (phone.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('กรุณากรอกเบอร์โทรศัพท์')));
+                        return;
+                      }
+                      Navigator.of(context).pushNamed('/otp', arguments: phone);
                     },
-                    // ข้อความลิงค์
-                    child: const Text(
-                      AppStrings.register,
-                      style: TextStyle(
-                        color: AppColors.primaryColor,
-                        fontWeight: FontWeight.bold,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: AppColors.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text('รับรหัส OTP', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.white)),
+                  ),
+                ] else ...[
+                  // Email Login
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      hintText: 'Email',
+                      prefixIcon: Icon(Icons.email_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: obscurePassword,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            obscurePassword = !obscurePassword;
+                          });
+                        },
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: isLoading ? null : _handleLogin,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: AppColors.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                            ),
+                          )
+                        : const Text('เข้าสู่ระบบ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.white)),
+                  ),
                 ],
-              ),
-            ],
+                const SizedBox(height: 24),
+                // Register Link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('ลงทะเบียนบัญชีใหม่? ', style: TextStyle(color: AppColors.charcoal)),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/register');
+                      },
+                      child: const Text(
+                        'สร้างบัญชี',
+                        style: TextStyle(
+                          color: AppColors.primaryBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 48),
+                // Google Button
+                OutlinedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('กำลังพัฒนาระบบ Google Login')),
+                    );
+                  },
+                  icon: const FaIcon(FontAwesomeIcons.google, color: Colors.red, size: 20),
+                  label: const Text(
+                    'Continue With Google',
+                    style: TextStyle(color: AppColors.dark, fontSize: 16),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: const BorderSide(color: AppColors.lightgray),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    backgroundColor: AppColors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

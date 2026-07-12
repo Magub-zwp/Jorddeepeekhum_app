@@ -32,8 +32,8 @@ class _TimeSelectionScreenState extends State<TimeSelectionScreen> {
         vehicle = args['vehicle'] as Vehicle;
         
         // ตั้งค่าเริ่มต้น
-        startTime = DateTime.now();
-        endTime = startTime!.add(const Duration(hours: 3));
+        startTime = args['startTime'] as DateTime? ?? DateTime.now();
+        endTime = args['endTime'] as DateTime? ?? startTime!.add(const Duration(hours: 3));
       }
       _dataLoaded = true;
     }
@@ -147,210 +147,250 @@ class _TimeSelectionScreenState extends State<TimeSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('เลือกเวลาจอดรถ'),
-        backgroundColor: AppColors.primaryColor,
+        title: const Text('เลือกเวลาจอดรถ', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.dark,
+        elevation: 0,
       ),
       backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // ข้อมูลที่เลือก
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.local_parking, color: AppColors.primaryColor),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(parkingLot!.name, style: AppStyles.headingMedium),
-                                Text('ช่องจอด: ${parkingSpot!.spotNumber}', style: AppStyles.bodyTextSmall),
-                              ],
-                            ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue.withOpacity(0.1),
+                            shape: BoxShape.circle,
                           ),
-                        ],
-                      ),
-                      const Divider(height: 24),
-                      Row(
-                        children: [
-                          const Icon(Icons.directions_car, color: AppColors.accentColor, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              '${vehicle!.licensePlate} • ${vehicle!.brand} ${vehicle!.model}',
-                              style: AppStyles.bodyText,
-                            ),
+                          child: const Icon(Icons.local_parking, color: AppColors.primaryBlue),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(parkingLot!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.dark)),
+                              const SizedBox(height: 4),
+                              Text('ช่องจอด: ${parkingSpot!.spotNumber}', style: const TextStyle(color: AppColors.charcoal, fontSize: 14)),
+                            ],
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(height: 1, color: AppColors.lightgray),
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.lightgray.withOpacity(0.3),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.directions_car, color: AppColors.charcoal),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            '${vehicle!.licensePlate} • ${vehicle!.brand} ${vehicle!.model}',
+                            style: const TextStyle(fontSize: 14, color: AppColors.dark, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               // เลือกเวลาเข้า
-              const Text('เวลาเข้า', style: AppStyles.headingMedium),
+              const Text('เวลาเข้า', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.dark)),
               const SizedBox(height: 8),
               InkWell(
                 onTap: () => _selectDateTime(true),
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   decoration: BoxDecoration(
-                    color: AppColors.charcoal,
-                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
-                    border: Border.all(color: AppColors.lightgray),
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.lightgray.withOpacity(0.5)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today, color: AppColors.accentColor),
+                      const Icon(Icons.calendar_today, color: AppColors.charcoal, size: 20),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           startTime != null
-                              ? DateFormat('dd/MM/yyyy HH:mm').format(startTime!)
+                              ? DateFormat('dd MMM yyyy, HH:mm').format(startTime!)
                               : 'กดเพื่อเลือกเวลา',
-                          style: AppStyles.bodyText,
+                          style: const TextStyle(fontSize: 14, color: AppColors.dark, fontWeight: FontWeight.w500),
                         ),
                       ),
-                      const Icon(Icons.arrow_drop_down, color: AppColors.lightgray),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // เลือกเวลาออก
-              const Text('เวลาออก', style: AppStyles.headingMedium),
-              const SizedBox(height: 8),
-              InkWell(
-                onTap: () => _selectDateTime(false),
-                child: Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                  decoration: BoxDecoration(
-                    color: AppColors.charcoal,
-                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
-                    border: Border.all(color: AppColors.lightgray),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.calendar_today, color: AppColors.accentColor),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          endTime != null
-                              ? DateFormat('dd/MM/yyyy HH:mm').format(endTime!)
-                              : 'กดเพื่อเลือกเวลา',
-                          style: AppStyles.bodyText,
-                        ),
-                      ),
-                      const Icon(Icons.arrow_drop_down, color: AppColors.lightgray),
+                      const Icon(Icons.arrow_drop_down, color: AppColors.charcoal),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 24),
 
-              // แสดงระยะเวลาและราคา
-              if (startTime != null && endTime != null)
-                Card(
-                  color: AppColors.charcoal,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              // เลือกเวลาออก
+              const Text('เวลาออก', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.dark)),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: () => _selectDateTime(false),
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.lightgray.withOpacity(0.5)),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('สรุป', style: AppStyles.headingMedium),
-                        const Divider(height: 24),
-                        _summaryRow(
-                          'ระยะเวลา',
-                          PricingService.calculateDuration(
-                            startTime: startTime!,
-                            endTime: endTime!,
-                          ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_today, color: AppColors.charcoal, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          endTime != null
+                              ? DateFormat('dd MMM yyyy, HH:mm').format(endTime!)
+                              : 'กดเพื่อเลือกเวลา',
+                          style: const TextStyle(fontSize: 14, color: AppColors.dark, fontWeight: FontWeight.w500),
                         ),
-                        const SizedBox(height: 8),
-                        _summaryRow(
-                          'ราคา',
-                          PricingService.formatPrice(totalPrice),
-                          valueColor: AppColors.successColor,
-                        ),
-                        if (PricingService.isFreeParking(startTime: startTime!, endTime: endTime!))
-                          Container(
-                            margin: const EdgeInsets.only(top: 12),
-                            padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-                            decoration: BoxDecoration(
-                              color: AppColors.successColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.check_circle, color: AppColors.successColor, size: 20),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'ชั่วโมงแรกฟรี!',
-                                    style: TextStyle(
-                                      color: AppColors.successColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
+                      ),
+                      const Icon(Icons.arrow_drop_down, color: AppColors.charcoal),
+                    ],
                   ),
                 ),
-              const SizedBox(height: 80),
+              ),
+              const SizedBox(height: 32),
+
+              // แสดงระยะเวลาและราคา
+              if (startTime != null && endTime != null)
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlue.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('สรุป', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.dark)),
+                      const SizedBox(height: 16),
+                      _summaryRow(
+                        'ระยะเวลา',
+                        PricingService.calculateDuration(
+                          startTime: startTime!,
+                          endTime: endTime!,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _summaryRow(
+                        'ราคา',
+                        PricingService.formatPrice(totalPrice),
+                        valueColor: AppColors.primaryBlue,
+                        isBold: true,
+                      ),
+                      if (PricingService.isFreeParking(startTime: startTime!, endTime: endTime!))
+                        Container(
+                          margin: const EdgeInsets.only(top: 16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.check_circle, color: Colors.green, size: 20),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'ชั่วโมงแรกฟรี!',
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 100), // padding for bottom button
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
         child: ElevatedButton(
           onPressed: _handleNext,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 14),
+            backgroundColor: AppColors.primaryBlue,
+            padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
+              borderRadius: BorderRadius.circular(30),
             ),
           ),
-          child: const Text('ถัดไป', style: AppStyles.buttonText),
+          child: const Text('ดำเนินการต่อ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.white)),
         ),
       ),
     );
   }
 
-  Widget _summaryRow(String label, String value, {Color? valueColor}) {
+  Widget _summaryRow(String label, String value, {Color? valueColor, bool isBold = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppStyles.bodyText),
+        Text(label, style: const TextStyle(color: AppColors.charcoal, fontSize: 14)),
         Text(
           value,
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: valueColor ?? AppColors.textPrimary,
+            fontSize: isBold ? 18 : 14,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+            color: valueColor ?? AppColors.dark,
           ),
         ),
       ],

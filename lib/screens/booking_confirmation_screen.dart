@@ -32,86 +32,143 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // ไอคอนสำเร็จ
                 Container(
-                  width: 80,
-                  height: 80,
-                  decoration: const BoxDecoration(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.successColor,
+                    color: Colors.green.withOpacity(0.1),
                   ),
-                  child: const Icon(Icons.check, color: AppColors.white, size: 40),
+                  child: Center(
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.green,
+                        boxShadow: [
+                          BoxShadow(color: Colors.green, blurRadius: 10, offset: Offset(0, 4)),
+                        ],
+                      ),
+                      child: const Icon(Icons.check, color: AppColors.white, size: 40),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'จองสำเร็จ!',
-                  style: AppStyles.headingLarge,
+                  'การจองสำเร็จ!',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.dark),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'ขอบคุณที่ใช้บริการของเรา',
-                  style: AppStyles.bodyText,
+                  'คุณสามารถดูรายละเอียดการจองได้ที่ประวัติการจอง',
+                  style: TextStyle(fontSize: 14, color: AppColors.charcoal),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
                 
-                // การ์ดข้อมูล
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                // การ์ดข้อมูลแบบตั๋ว
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                    ],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // ✅ แสดง Visit Number แทน UUID
-                        const Text('เลขที่การจอง', style: AppStyles.bodyTextSmall),
-                        Text(
-                          booking!.visitNumber.isNotEmpty 
-                              ? booking!.visitNumber 
-                              : 'BK-${booking!.id}',
-                          style: AppStyles.headingMedium,
+                  child: Column(
+                    children: [
+                      // ส่วนบนของการ์ด
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Text('เลขที่การจอง (Visit Number)', style: TextStyle(color: AppColors.charcoal, fontSize: 14)),
+                            const SizedBox(height: 8),
+                            Text(
+                              booking!.visitNumber.isNotEmpty 
+                                  ? booking!.visitNumber 
+                                  : 'BK-${booking!.id}',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 28, color: AppColors.primaryBlue),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Booking ID: ${booking!.id}',
+                              style: const TextStyle(color: AppColors.charcoal, fontSize: 12),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Booking ID: ${booking!.id}',
-                          style: AppStyles.bodyTextSmall,
-                        ),
-                        
-                        const Divider(height: 24),
-                        _row('เวลาเข้า', AppUtils.formatDateTime(booking!.startTime)),
-                        _row(
-                          'เวลาออก',
-                          booking!.endTime != null
-                              ? AppUtils.formatDateTime(booking!.endTime!)
-                              : '-',
-                        ),
-                        _row('ราคารวม', '${booking!.totalPrice.toStringAsFixed(2)} บาท'),
-                        _row('สถานะ', booking!.status.toUpperCase()),
-                        
-                        const Divider(height: 24),
-                        Container(
-                          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-                          decoration: BoxDecoration(
-                            color: AppColors.accentColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
+                      ),
+                      
+                      // รอยประ
+                      Row(
+                        children: [
+                          Container(
+                            width: 15,
+                            height: 30,
+                            decoration: const BoxDecoration(
+                              color: AppColors.backgroundColor,
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
+                            ),
                           ),
-                          child: Text(
-                            'โปรดบันทึกหมายเลข ${booking!.visitNumber} '
-                            'เพื่อไว้ยืนยันในการออกจากลานจอด',
-                            style: AppStyles.bodyTextSmall,
-                            textAlign: TextAlign.center,
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return Flex(
+                                  direction: Axis.horizontal,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: List.generate(
+                                    (constraints.constrainWidth() / 10).floor(),
+                                    (index) => const SizedBox(
+                                      width: 5,
+                                      height: 1,
+                                      child: DecoratedBox(decoration: BoxDecoration(color: AppColors.lightgray)),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
+                          Container(
+                            width: 15,
+                            height: 30,
+                            decoration: const BoxDecoration(
+                              color: AppColors.backgroundColor,
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(15), bottomLeft: Radius.circular(15)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      // ส่วนล่างของการ์ด
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            _row('เวลาเข้า', AppUtils.formatDateTime(booking!.startTime)),
+                            _row(
+                              'เวลาออก',
+                              booking!.endTime != null
+                                  ? AppUtils.formatDateTime(booking!.endTime!)
+                                  : '-',
+                            ),
+                            _row('ราคารวม', '${booking!.totalPrice.toStringAsFixed(2)} บาท', isBold: true),
+                            _row('สถานะ', 'จ่ายเงินแล้ว', valueColor: Colors.green, isBold: true),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
                 
@@ -126,13 +183,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: AppColors.primaryBlue,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text('กลับไปจองที่อื่น', style: AppStyles.buttonText),
+                    child: const Text('กลับสู่หน้าหลัก', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.white)),
                   ),
                 ),
               ],
@@ -143,19 +200,19 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
-  Widget _row(String label, String value) {
+  Widget _row(String label, String value, {Color? valueColor, bool isBold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: AppStyles.bodyTextSmall),
+          Text(label, style: const TextStyle(color: AppColors.charcoal, fontSize: 14)),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+              color: valueColor ?? AppColors.dark,
             ),
           ),
         ],

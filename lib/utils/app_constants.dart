@@ -2,37 +2,38 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // สีหลักของแอปพลิเคชัน (Dark Theme)
-  static const Color dark = Color(0xFF1E1C1C); // สีดำเข้ม
-  static const Color charcoal = Color(0xFF424242); // สีเทาหนึ่ง
-  static const Color coralred = Color(0xFFFF4545); // สีแดงเข้ม
-  static const Color lightgray = Color(0xFFBDBDBD); // สีเทาอ่อน
+  // สีหลักของแอปพลิเคชัน (Light Theme - Figma)
+  static const Color primaryBlue = Color(0xFF0038FF); // สีน้ำเงินหลักจาก Figma
+  static const Color dark = Color(0xFF1E1C1C); // สีดำสำหรับข้อความ
+  static const Color charcoal = Color(0xFF757575); // สีเทาเข้ม
+  static const Color lightgray = Color(0xFFE0E0E0); // สีเทาอ่อนสำหรับ Border
+  static const Color veryLightGray = Color(0xFFF5F6FA); // สีพื้นหลังหน้าจอ
 
   // สีหลัก
-  static const Color primaryColor = coralred; // สีแดงเข้มเป็นสีหลัก
-  static const Color primaryDark = dark; // สีดำเข้ม
-  static const Color accentColor = lightgray; // สีเทาอ่อนเป็นสีเน้น
+  static const Color primaryColor = primaryBlue;
+  static const Color primaryDark = dark;
+  static const Color accentColor = primaryBlue;
 
   // สีพื้นหลัง
-  static const Color backgroundColor = dark; // พื้นหลังมืด
-  static const Color surfaceColor = charcoal; // สีพื้นผิวรอง
-  static const Color white = Color(0xFFFFFFFF); // สีขาว
-  static const Color black = Color(0xFF000000); // สีดำ
+  static const Color backgroundColor = veryLightGray;
+  static const Color surfaceColor = Color(0xFFFFFFFF);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
 
   // สีข้อความ
-  static const Color textPrimary = Color(0xFFFFFFFF); // ข้อความหลัก (ขาว)
-  static const Color textSecondary = lightgray; // ข้อความรอง (เทาอ่อน)
-  static const Color textHint = charcoal; // ข้อความ hint (เทาหนึ่ง)
+  static const Color textPrimary = dark;
+  static const Color textSecondary = charcoal;
+  static const Color textHint = Color(0xFFBDBDBD);
 
   // สีพิเศษ
-  static const Color successColor = Color(0xFF4CAF50); // สีเขียว (สำเร็จ)
-  static const Color errorColor = coralred; // สีแดงเข้ม (ข้อผิดพลาด)
-  static const Color warningColor = Color(0xFFFF9800); // สีส้ม (คำเตือน)
+  static const Color successColor = Color(0xFF4CAF50);
+  static const Color errorColor = Color(0xFFFF4545);
+  static const Color warningColor = Color(0xFFFF9800);
 
   // สีสำหรับสถานะจอดรถ
-  static const Color availableColor = Color(0xFF4CAF50); // ว่าง
-  static const Color occupiedColor = coralred; // ไม่ว่าง
-  static const Color selectedColor = coralred; // ถูกเลือก
+  static const Color availableColor = Color(0xFFE8EAF6); // สีฟ้าระเรื่อ
+  static const Color occupiedColor = Color(0xFFEEEEEE); // สีเทา
+  static const Color selectedColor = primaryBlue; // สีน้ำเงินเข้ม
 }
 
 class AppStrings {
@@ -115,7 +116,7 @@ class AppStyles {
   static const TextStyle buttonText = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.bold,
-    color: AppColors.dark,
+    color: AppColors.white, // เปลี่ยนเป็นสีขาวเพื่อให้ตัดกับปุ่มสีน้ำเงิน
   );
 }
 

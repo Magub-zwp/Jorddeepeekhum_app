@@ -9,6 +9,8 @@ class ParkingLot {
   final int totalSpots;
   final int availableSpots;
   final String operatedBy;
+  final double latitude;
+  final double longitude;
 
   ParkingLot({
     required this.id,
@@ -19,6 +21,8 @@ class ParkingLot {
     required this.totalSpots,
     required this.availableSpots,
     required this.operatedBy,
+    this.latitude = 13.7563, // Default BKK Lat
+    this.longitude = 100.5018, // Default BKK Lng
   });
 
   Map<String, dynamic> toMap() {
@@ -31,6 +35,8 @@ class ParkingLot {
       'totalSpots': totalSpots,
       'availableSpots': availableSpots,
       'operatedBy': operatedBy,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -54,6 +60,8 @@ class ParkingLot {
       // ✅ รองรับ operated_by (จาก PHP) และ operatedBy
       operatedBy:
           (map['operated_by'] ?? map['operatedBy'] ?? '').toString(),
+      latitude: double.tryParse(map['latitude']?.toString() ?? '13.7563') ?? 13.7563,
+      longitude: double.tryParse(map['longitude']?.toString() ?? '100.5018') ?? 100.5018,
     );
   }
 }

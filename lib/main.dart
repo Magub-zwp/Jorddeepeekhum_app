@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'screens/login_screen.dart';
+import 'screens/otp_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/parking_lots_screen.dart';
 import 'screens/parking_spots_screen.dart';
@@ -16,12 +18,17 @@ import 'utils/app_utils.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // FIX: initialize locale ก่อนทุกอย่าง
+  try {
+    await FlutterConfig.loadEnvVariables();
+  } catch (e) {
+    print('⚠️ Could not load .env file: $e');
+  }
+
   await AppUtils.initLocale();
 
   // init database
   final apiService = ApiService();
-  await apiService.initializeDatabase();
+  // await apiService.initializeDatabase(); // ❌ ปิดการรัน init_db.php เพื่อป้องกันการลบฐานข้อมูลทิ้งทุกครั้งที่เปิดแอป
 
   runApp(const ParkingApp());
 }
@@ -35,37 +42,41 @@ class ParkingApp extends StatelessWidget {
       title: 'JordDeePeeKhum',
       theme: ThemeData(
         useMaterial3: true,
-        brightness: Brightness.dark,
-        primaryColor: AppColors.coralred,
-        scaffoldBackgroundColor: AppColors.dark,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.coralred,
-          secondary: AppColors.lightgray,
-          surface: AppColors.charcoal,
-          background: AppColors.dark,
-          error: AppColors.coralred,
-          onPrimary: AppColors.dark,
-          onSecondary: AppColors.dark,
+        brightness: Brightness.light,
+        primaryColor: AppColors.primaryBlue,
+        scaffoldBackgroundColor: AppColors.backgroundColor,
+        colorScheme: const ColorScheme.light(
+          primary: AppColors.primaryBlue,
+          secondary: AppColors.charcoal,
+          surface: AppColors.surfaceColor,
+          background: AppColors.backgroundColor,
+          error: AppColors.errorColor,
+          onPrimary: AppColors.white,
+          onSecondary: AppColors.white,
           onSurface: AppColors.textPrimary,
           onBackground: AppColors.textPrimary,
         ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.charcoal,
+          backgroundColor: AppColors.surfaceColor,
           foregroundColor: AppColors.textPrimary,
           elevation: 0,
+          centerTitle: true,
+          iconTheme: IconThemeData(color: AppColors.textPrimary),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.coralred,
-            foregroundColor: AppColors.dark,
+            backgroundColor: AppColors.primaryBlue,
+            foregroundColor: AppColors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
             ),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            elevation: 0,
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: const Color.fromARGB(255, 156, 155, 155),
+          fillColor: AppColors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
             borderSide: const BorderSide(color: AppColors.lightgray),
@@ -76,20 +87,22 @@ class ParkingApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
-            borderSide: const BorderSide(color: AppColors.coralred, width: 2),
+            borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
           ),
-          labelStyle: const TextStyle(color: AppColors.lightgray),
-          hintStyle: const TextStyle(color: AppColors.charcoal),
+          labelStyle: const TextStyle(color: AppColors.charcoal),
+          hintStyle: const TextStyle(color: AppColors.textHint),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(foregroundColor: AppColors.coralred),
+          style: TextButton.styleFrom(foregroundColor: AppColors.primaryBlue),
         ),
-        cardColor: AppColors.charcoal,
+        cardColor: AppColors.surfaceColor,
       ),
       home: const _HomeWrapper(),
       routes: {
         '/login':                (context) => const LoginScreen(),
         '/register':             (context) => const RegisterScreen(),
+        '/otp':                  (context) => const OtpScreen(),
         '/parking-lots':         (context) => const ParkingLotsScreen(),
         '/parking-spots':        (context) => const ParkingSpotsScreen(),
         '/vehicle-details':      (context) => const VehicleDetailsScreen(),
